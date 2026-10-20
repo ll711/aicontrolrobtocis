@@ -1,0 +1,222 @@
+{
+  "training_note": "Retrained 2026-10-19; synthetic teacher, seed 42, 6144 samples; wheel-difference features and mirror symmetry; not robot measurements.",
+  "csv": "C:\\Users\\HERO\\Desktop\\Github\\second_decision_tree\\tree2_data.csv",
+  "csv_sha256": "69f68904fc82ea8a918d49cbb764723c173012ce05a1be3e0d3daecb09d38656",
+  "exported_header": "C:\\Users\\HERO\\Desktop\\Github\\robotics_system_all_AI\\robotics-system\\RoboticsScienceAndSystems-main\\StampC3_Template\\Tree2Model.h",
+  "exported_header_sha256": "87b85b9611441f7698b73249838e8b2632a8f63787b2b032232d14e23f53aff7",
+  "output": "pwm_r_target - pwm_l_target",
+  "features": [
+    "shortest_clockwise_angle_rad",
+    "signal",
+    "previous_right_minus_left_pwm"
+  ],
+  "prediction_constraint": "0.5*(raw(e,signal,prevR-prevL)-raw(-e,signal,prevL-prevR)); left/right mirror symmetry",
+  "model_parameters": {
+    "max_depth": 4,
+    "min_samples_leaf": 20,
+    "random_state": 42,
+    "leaf_ridge_penalty": 0.01
+  },
+  "samples_after_stop_filter": 6144,
+  "sessions": 24,
+  "split": {
+    "method": "GroupShuffleSplit by session_id",
+    "test_size": 0.25,
+    "random_state": 42,
+    "training_samples": 4608,
+    "validation_samples": 1536,
+    "training_sessions": 18,
+    "validation_sessions": 6,
+    "training_session_ids": [
+      "synthetic_01",
+      "synthetic_02",
+      "synthetic_03",
+      "synthetic_04",
+      "synthetic_05",
+      "synthetic_06",
+      "synthetic_07",
+      "synthetic_10",
+      "synthetic_12",
+      "synthetic_13",
+      "synthetic_14",
+      "synthetic_15",
+      "synthetic_17",
+      "synthetic_19",
+      "synthetic_20",
+      "synthetic_21",
+      "synthetic_22",
+      "synthetic_23"
+    ],
+    "validation_session_ids": [
+      "synthetic_00",
+      "synthetic_08",
+      "synthetic_09",
+      "synthetic_11",
+      "synthetic_16",
+      "synthetic_18"
+    ]
+  },
+  "validation_pwm_difference_mae": 4.191310450293433,
+  "previous_model_same_split_mae": 6.656139154464697,
+  "validation_mae_reduction_percent": 37.03090706145988,
+  "validation_mae_by_signal": {
+    "-1": 4.255983887386598,
+    "1": 4.158973731746853
+  },
+  "deployment_fit": "Refit on all non-stop samples after validation",
+  "depth": 4,
+  "leaves": 16,
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1"
+  },
+  "data_metadata": {
+    "data_source": "synthetic_teacher_not_measured_on_robot",
+    "purpose": "Software integration and teacher imitation only; not hardware validation",
+    "seed": 42,
+    "sessions": 24,
+    "samples_per_session": 256,
+    "rows": 6144,
+    "angle_convention": "alpha_rad clockwise in [0, 2*pi); e in (-pi, pi]",
+    "signal": {
+      "1": "forward base +45",
+      "-1": "reverse base -35",
+      "0": "excluded; direct stop"
+    },
+    "previous_pwm": "Independent integer samples in [-100, 100]; not a physical trajectory",
+    "teacher": "desired_delta=clamp(-90*e,-140,140); delta=0.35*desired_delta+0.65*(prevR-prevL); delta=clamp(delta,-2*(100-abs(base)),2*(100-abs(base))); L=base-delta/2; R=base+delta/2",
+    "limitation": "No measured motor, friction, sensor, delay, or robot dynamics; validate on hardware before relying on predictions"
+  },
+  "deployment_behavior_checks": {
+    "scope": "Synthetic teacher checks, equal previous wheel PWM unless stated; no hardware validation",
+    "equal_wheel_full_angle_grid_cases": 8194,
+    "equal_wheel_wrong_turn_sign_cases": 0,
+    "straight_equal_wheel_max_abs_difference": 0.0,
+    "near_zero_angle_range_rad": [
+      -0.1,
+      0.1
+    ],
+    "near_zero_cases": 2002,
+    "near_zero_teacher_mae": 0.0009268607869357555,
+    "near_zero_teacher_max_absolute_error": 0.0018519192405088702,
+    "mirror_symmetry_max_absolute_error": 0.0,
+    "small_angle_probes": [
+      {
+        "eCW": -0.10000000149011612,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": 3.1481481761269228
+      },
+      {
+        "eCW": -0.019999999552965164,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": 0.6296296117698532
+      },
+      {
+        "eCW": -0.009999999776482582,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": 0.3148148058849266
+      },
+      {
+        "eCW": 0.0,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": 0.0
+      },
+      {
+        "eCW": 0.009999999776482582,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": -0.3148148058849266
+      },
+      {
+        "eCW": 0.019999999552965164,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": -0.6296296117698532
+      },
+      {
+        "eCW": 0.10000000149011612,
+        "signal": -1,
+        "previous_difference": 0,
+        "predicted_difference": -3.1481481761269228
+      },
+      {
+        "eCW": -0.10000000149011612,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": 3.1481481761269228
+      },
+      {
+        "eCW": -0.019999999552965164,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": 0.6296296117698532
+      },
+      {
+        "eCW": -0.009999999776482582,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": 0.3148148058849266
+      },
+      {
+        "eCW": 0.0,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": 0.0
+      },
+      {
+        "eCW": 0.009999999776482582,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": -0.3148148058849266
+      },
+      {
+        "eCW": 0.019999999552965164,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": -0.6296296117698532
+      },
+      {
+        "eCW": 0.10000000149011612,
+        "signal": 1,
+        "previous_difference": 0,
+        "predicted_difference": -3.1481481761269228
+      }
+    ],
+    "existing_turn_at_zero_angle": [
+      {
+        "signal": -1,
+        "previous_difference": -100,
+        "predicted_difference": -65.46567471290291
+      },
+      {
+        "signal": -1,
+        "previous_difference": 100,
+        "predicted_difference": 65.46567471290291
+      },
+      {
+        "signal": 1,
+        "previous_difference": -100,
+        "predicted_difference": -64.57564809042239
+      },
+      {
+        "signal": 1,
+        "previous_difference": 100,
+        "predicted_difference": 64.57564809042239
+      }
+    ]
+  },
+  "cpp_parity": {
+    "passed": true,
+    "header_sha256": "87b85b9611441f7698b73249838e8b2632a8f63787b2b032232d14e23f53aff7",
+    "cases": 25384,
+    "maximum_absolute_error": 1.3881606520271816e-05,
+    "relative_tolerance": 2e-05,
+    "absolute_tolerance": 0.0001,
+    "coverage": "Training, 4000 random inputs, angle split neighbors, +/-pi tie, near-zero grid, mirrored inputs"
+  }
+}

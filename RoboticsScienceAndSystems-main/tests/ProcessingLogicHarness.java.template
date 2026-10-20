@@ -1,0 +1,222 @@
+import java.util.*;
+
+// Actual PDE classes are inserted below. Drawing and TCP endpoints are fakes;
+// state transitions, parsing, geometry and mouse handlers execute the source.
+public class ProcessingLogicHarness {
+  int clock = 100, width = 1000, height = 800, mouseX, mouseY, mouseButton;
+  static final int LEFT = 37, RIGHT = 39, CENTER = 3, BASELINE = 0, CORNER = 0;
+  int checks = 0;
+  int millis() { return clock; }
+  void check(boolean value, String message) {
+    checks++;
+    if (!value) throw new AssertionError(message);
+  }
+  void near(float actual, float expected, String message) {
+    check(Float.isFinite(actual) && Math.abs(actual - expected) < 0.001f, message);
+  }
+  static float max(float a, float b) { return Math.max(a,b); }
+  static float abs(float value) { return Math.abs(value); }
+  static float pow(float a, float b) { return (float)Math.pow(a,b); }
+  static float constrain(float value, float min, float max) { return Math.max(min, Math.min(max, value)); }
+  static float dist(float ax, float ay, float bx, float by) { return (float)Math.hypot(ax-bx, ay-by); }
+  String[] splitTokens(String value) { return value.trim().split("\\s+"); }
+  String[] split(String value, char separator) { return value.split(java.util.regex.Pattern.quote("" + separator), -1); }
+  String trim(String value) { return value.trim(); }
+  float parseFloat(String value) { try { return Float.parseFloat(value); } catch (NumberFormatException e) { return Float.NaN; } }
+  String str(int value) { return Integer.toString(value); }
+  String nf(float value, int left, int right) { return String.format(Locale.US, "%." + right + "f", value); }
+  void pushStyle() {} void popStyle() {} void noFill() {} void noStroke() {}
+  void strokeWeight(float value) {} void stroke(float... values) {} void fill(float... values) {}
+  int color(float... values) { return 0; }
+  void line(float... values) {} void ellipse(float... values) {} void rect(float... values) {}
+  void beginShape() {} void endShape() {} void vertex(float... values) {}
+  void rectMode(int value) {} void textSize(float value) {} void textAlign(int... values) {}
+  void text(String value, float... positions) {} float textWidth(String value) { return value.length() * 6; }
+  static class PVector {
+    float x, y;
+    PVector(float x, float y) { this.x=x; this.y=y; }
+    PVector copy() { return new PVector(x,y); }
+    static float dist(PVector a, PVector b) { return (float)Math.hypot(a.x-b.x,a.y-b.y); }
+  }
+  static class Client {
+    boolean online = true;
+    ArrayList<String> writes = new ArrayList<String>();
+    boolean active() { return online; }
+    void write(String value) { writes.add(value); }
+    void stop() { online = false; }
+    String last() { return writes.get(writes.size()-1); }
+  }
+  class Simulator {
+    Client telemetryClient;
+    boolean simulationMode=false;
+    FakeController controller=new FakeController();
+    FakeRobot robot=new FakeRobot();
+    float zoom=1, viewCentreX=0, viewCentreY=0, minimumZoom=0.1f, maximumZoom=10;
+    boolean showTelemetry=false, trackRobot=false;
+    float uiMargin() { return 12; } float statusWidth() { return 640; }
+    float uiScale() { return 1; } float telemetryPanelWidth() { return 250; }
+    void panBy(float x, float y) { viewCentreX+=x; viewCentreY+=y; }
+  }
+  class RobotPose_c { float x,y,theta; }
+  class FakeRobot {
+    FakeOdometry odometry=new FakeOdometry();
+    FakeMotors motors=new FakeMotors();
+    void setMotorPWM(float l,float r) { motors.left.pwm=l;motors.right.pwm=r; }
+    void resetForRun(float x,float y,float theta,float l,float r) {
+      odometry.pose.x=x;odometry.pose.y=y;odometry.pose.theta=theta;setMotorPWM(0,0);
+    }
+  }
+  class FakeOdometry { RobotPose_c pose=new RobotPose_c(); }
+  class FakeMotor { float pwm; }
+  class FakeMotors { FakeMotor left=new FakeMotor(),right=new FakeMotor(); }
+  class FakeController {
+    boolean running=false;
+    String status="Ready";
+    TwoTreeController core=new TwoTreeController();
+    TwoTreeController.Decision decision=new TwoTreeController.Decision();
+    void reset() { running=false;core.reset(); }
+    void setSignal(int signal) { running=signal!=0; }
+    boolean loadRoute(ArrayList<PVector> points) {
+      double[][] route=new double[points.size()][2];
+      for(int i=0;i<points.size();i++) {route[i][0]=points.get(i).x/1000.0;route[i][1]=points.get(i).y/1000.0;}
+      return core.loadPath(route);
+    }
+  }
+
+// INSERT_ACTUAL_PDE_SOURCE
+
+  class Fixture {
+    Simulator sim = new Simulator();
+    RouteEditor_c editor = new RouteEditor_c(sim);
+    Fixture(boolean connect) {
+      if (connect) { sim.telemetryClient = new Client(); editor.update(); }
+      editor.points.add(new PVector(0,0));
+      editor.points.add(new PVector(250,100));
+      editor.changed();
+    }
+    void reply(String line) { check(editor.handleLine(line, clock), "protocol line claimed by route editor"); }
+    void upload() {
+      editor.upload();
+      check(sim.telemetryClient.last().equals("STOP\n"), "upload stops physical robot first");
+      check(!editor.canStart(), "upload remains unarmed before acknowledgements");
+      reply("ACK ROUTE_END 2");
+      check(editor.phase == editor.UPLOAD_STOP, "out-of-order ACK cannot complete upload");
+      reply("ACK STOP");
+      check(sim.telemetryClient.last().equals("ROUTE_BEGIN 2\n"), "declared vertex count sent");
+      reply("ACK ROUTE_BEGIN 2");
+      check(sim.telemetryClient.last().equals("ROUTE_POINT 0.000000 0.000000\n"), "first point converted mm to metres");
+      reply("ACK ROUTE_POINT 1");
+      check(sim.telemetryClient.last().equals("ROUTE_POINT 0.250000 0.100000\n"), "point coordinates preserve positive world Y");
+      reply("ACK ROUTE_POINT 2");
+      check(sim.telemetryClient.last().equals("ROUTE_END\n"), "commit follows all point acknowledgements");
+      check(!editor.canStart(), "route cannot start before commit ACK");
+      reply("ACK ROUTE_END 2");
+      check(editor.canStart(), "complete acknowledged route enables explicit START");
+      check(!sim.telemetryClient.writes.contains("START\n"), "upload never starts physical motion");
+    }
+  }
+  void protocolTests() {
+    Fixture f = new Fixture(true);
+    check(!f.editor.canStart(), "new TCP session requires upload");
+    f.upload();
+    f.editor.activate(5);
+    check(f.sim.telemetryClient.last().equals("START\n"), "Start button sends explicit START");
+    f.reply("ACK START");
+    check(f.editor.robotRunning && !f.editor.editable(), "running robot blocks route editing");
+    f.reply("STATUS mode=STOPPED route_ready=1 action=STOP progress=250 points=251 error=none");
+    check(!f.editor.canStart(), "natural endpoint cannot directly restart a completed controller");
+    f.editor.stop(); f.reply("ACK STOP");
+    check(f.editor.physicalState.equals("WAITING") && f.editor.canStart(), "acknowledged explicit stop resets run state");
+    f.editor.changed();
+    check(!f.editor.uploaded && !f.editor.canStart(), "editing invalidates uploaded revision");
+    Fixture bad = new Fixture(true);
+    bad.editor.upload(); bad.reply("ACK STOP"); bad.reply("ACK ROUTE_BEGIN 99");
+    check(!bad.editor.uploaded && bad.editor.phase == bad.editor.STOPPING,
+      "wrong ACK point count rejects upload and requests STOP");
+    Fixture stopping = new Fixture(true);
+    stopping.editor.upload(); stopping.editor.stop(); stopping.reply("ACK ROUTE_END 2");
+    check(!stopping.editor.canStart() && stopping.editor.phase == stopping.editor.STOPPING,
+      "late upload ACK cannot override emergency stop");
+    stopping.reply("ACK STOP");
+    check(!stopping.editor.uploaded, "aborted upload never becomes ready");
+  }
+  void disconnectAndTimeoutTests() {
+    Fixture f = new Fixture(true); f.upload();
+    f.sim.telemetryClient = new Client(); f.editor.update();
+    check(!f.editor.uploaded && !f.editor.canStart(), "same-frame replacement socket invalidates readiness");
+    f.sim.telemetryClient.stop(); f.editor.update();
+    check(f.editor.physicalState.equals("OFFLINE") && !f.editor.canStart(), "disconnect disables Start");
+    f.sim.telemetryClient = new Client(); f.editor.update();
+    check(!f.editor.uploaded, "reconnect requires a new upload");
+    Fixture slow = new Fixture(true);
+    slow.editor.upload();
+    clock += slow.editor.COMMAND_TIMEOUT_MS + 1; slow.editor.update();
+    check(!slow.editor.uploaded && slow.sim.telemetryClient.last().equals("STOP\n"),
+      "missing ACK requests STOP without arming route");
+    clock += slow.editor.COMMAND_TIMEOUT_MS + 1; slow.editor.update(); slow.editor.update();
+    check(!slow.sim.telemetryClient.active() && !slow.editor.canStart(), "missing replies eventually disconnect");
+    clock = 100;
+    Fixture heartbeat = new Fixture(true);
+    heartbeat.sim.telemetryClient.writes.clear(); clock += 500; heartbeat.editor.update();
+    check(heartbeat.sim.telemetryClient.last().equals("PING\n"), "connected editor transmits watchdog heartbeat");
+  }
+  void mouseAndGeometryTests() {
+    Fixture f = new Fixture(false); f.editor.points.clear();
+    mouseButton=LEFT; mouseX=500; mouseY=400; f.editor.mousePressed(); f.editor.mouseReleased();
+    mouseX=600; mouseY=300; f.editor.mousePressed(); f.editor.mouseReleased();
+    check(f.editor.points.size()==2, "mouse points mode adds vertices");
+    near(f.editor.points.get(0).x,0,"canvas centre maps to world origin X");
+    near(f.editor.points.get(1).x,100,"screen X maps to world millimetres");
+    near(f.editor.points.get(1).y,100,"screen upward maps to positive world Y");
+    mouseX=600; mouseY=300; f.editor.mousePressed(); mouseX=620; mouseY=310; f.editor.mouseDragged(); f.editor.mouseReleased();
+    near(f.editor.points.get(1).x,120,"drag edits selected point X");
+    near(f.editor.points.get(1).y,90,"drag edits selected point Y");
+    mouseButton=RIGHT; f.editor.mousePressed();
+    check(f.editor.points.size()==1, "right click removes a route vertex");
+    f.editor.activate(2); check(f.editor.points.size()==2,"undo restores removed vertex");
+    mouseButton=CENTER; mouseX=500; mouseY=300; f.editor.mousePressed();
+    mouseX=550; mouseY=340; f.editor.mouseDragged(); f.editor.mouseReleased();
+    near(f.sim.viewCentreX,-50,"middle drag pans world X"); near(f.sim.viewCentreY,40,"middle drag pans world Y");
+    PVector before = f.editor.world(mouseX,mouseY); f.editor.mouseWheel(-1);
+    PVector after = f.editor.world(mouseX,mouseY);
+    near(after.x,before.x,"wheel zoom preserves cursor world X"); near(after.y,before.y,"wheel zoom preserves cursor world Y");
+    ArrayList<PVector> dense = new ArrayList<PVector>();
+    for(int i=0;i<1000;i++) dense.add(new PVector(i/10.0f,i/20.0f));
+    ArrayList<PVector> simplified = f.editor.simplify(dense,2);
+    check(simplified.size()==2,"freehand simplification removes redundant collinear samples");
+    near(simplified.get(0).x,dense.get(0).x,"simplification retains first endpoint");
+    near(simplified.get(1).x,dense.get(999).x,"simplification retains final endpoint");
+    f.editor.points.clear(); f.editor.points.add(new PVector(0,0)); f.editor.points.add(new PVector(4001,0));
+    check(!f.editor.validationError().isEmpty(),"UI rejects route above 4 m");
+    f.editor.points.set(1,new PVector(Float.NaN,0));
+    check(!f.editor.validationError().isEmpty(),"UI rejects nonfinite route coordinates");
+  }
+  void telemetryTests() {
+    TCPTelemetry_c telemetry = new TCPTelemetry_c();
+    String sample="100,1,2,0.5,30,40,100,100,1,2,3,4,5,1";
+    check(telemetry.parse(sample,100),"14-column telemetry remains accepted");
+    check(!telemetry.parse("ACK PING",100),"ACK does not parse as telemetry");
+    check(!telemetry.parse(sample.replace("0.5","Infinity"),100),"infinite telemetry rejected");
+    check(!telemetry.parse(sample.replace("0.5","NaN"),100),"NaN telemetry rejected");
+    near(telemetry.theta,0.5f,"rejected telemetry preserves last valid state");
+  }
+  void simulationEditorTests() {
+    Fixture f=new Fixture(false);f.sim.simulationMode=true;
+    check(!f.editor.canStart(),"simulation requires loading the draft");
+    f.editor.activate(4);check(f.editor.canStart(),"simulation loads without TCP");
+    f.editor.activate(5);check(f.sim.controller.running,"simulation Start starts local controller");
+    check(!f.editor.editable(),"simulation motion blocks editing");
+    check(!f.editor.enabled(9),"running simulation cannot switch to physical robot");
+    f.editor.stop();check(!f.sim.controller.running,"Space/STOP stops simulation without TCP");
+    f.editor.changed();check(!f.editor.canStart(),"changed simulation draft needs reloading");
+    f.editor.activate(10);check(f.editor.points.size()==5,"demo loads a closed square");
+    f.editor.activate(4);f.editor.activate(7);
+    near(f.sim.robot.odometry.pose.x,0,"simulation reset uses origin");
+    f.editor.activate(9);check(!f.sim.simulationMode && !f.editor.canStart(),"physical mode requires its own upload");
+  }
+  void run() {
+    protocolTests(); disconnectAndTimeoutTests(); mouseAndGeometryTests(); telemetryTests();simulationEditorTests();
+    System.out.println("PASS: " + checks + " checks executing actual RouteEditor/TCPTelemetry PDE source with Java API stubs");
+  }
+  public static void main(String[] args) { new ProcessingLogicHarness().run(); }
+}

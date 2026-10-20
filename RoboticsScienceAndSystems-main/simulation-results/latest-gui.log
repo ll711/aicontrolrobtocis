@@ -1,0 +1,3 @@
+Warning: Processing now sets pixelDensity(2) by default on high-density screens. This may change how your sketch looks. To revert to the old behavior, set pixelDensity(1) in setup().
+Finished.
+Processing build: C:\Users\HERO\Desktop\Github\robotics_system_all_AI\robotics-system\RoboticsScienceAndSystems-main\build-host\processing-758e8c0f56e8443c80fc066b1d456abd

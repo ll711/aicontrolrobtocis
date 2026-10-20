@@ -1,0 +1,9 @@
+route,success,terminal,seconds,goal_error_mm,remaining_mm,reason
+straight,true,true,5.50,4.749878,5.000000,Reached endpoint
+right_angle,true,true,7.70,4.900857,5.000000,Reached endpoint
+closed_square,true,true,15.45,4.902673,5.000000,Reached endpoint
+s_curve,true,true,9.90,4.817867,3.420185,Reached endpoint
+crossing,false,false,18.25,5.059894,3.116882,Tree1 STOP before geometric endpoint
+reverse,true,true,7.05,4.875001,5.000000,Reached endpoint
+rotate_start,true,true,6.60,4.412288,4.000000,Reached endpoint
+duplicates,true,true,6.30,4.751507,4.000000,Reached endpoint

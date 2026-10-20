@@ -1,0 +1,105 @@
+{
+  "tested_at_utc": "2026-10-19T20:38:52.928304+00:00",
+  "platform": "Processing 4.5.7, real Java-mode compiler and core; course PDE physics",
+  "physics_step_ms": 10,
+  "control_step_ms": 50,
+  "goal_tolerance_mm": 5,
+  "motor_model": "Course linear PWM-to-wheel-speed model; no measured friction or slip",
+  "passed_routes": 7,
+  "routes": [
+    {
+      "route": "straight",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "5.50",
+      "goal_error_mm": "4.749878",
+      "remaining_mm": "5.000000",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "right_angle",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "7.70",
+      "goal_error_mm": "4.900857",
+      "remaining_mm": "5.000000",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "closed_square",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "15.45",
+      "goal_error_mm": "4.902673",
+      "remaining_mm": "5.000000",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "s_curve",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "9.90",
+      "goal_error_mm": "4.817867",
+      "remaining_mm": "3.420185",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "crossing",
+      "success": "false",
+      "terminal": "false",
+      "seconds": "18.25",
+      "goal_error_mm": "5.059894",
+      "remaining_mm": "3.116882",
+      "reason": "Tree1 STOP before geometric endpoint"
+    },
+    {
+      "route": "reverse",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "7.05",
+      "goal_error_mm": "4.875001",
+      "remaining_mm": "5.000000",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "rotate_start",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "6.60",
+      "goal_error_mm": "4.412288",
+      "remaining_mm": "4.000000",
+      "reason": "Reached endpoint"
+    },
+    {
+      "route": "duplicates",
+      "success": "true",
+      "terminal": "true",
+      "seconds": "6.30",
+      "goal_error_mm": "4.751507",
+      "remaining_mm": "4.000000",
+      "reason": "Reached endpoint"
+    }
+  ],
+  "java_cpp_parity": {
+    "passed": true,
+    "cases": 11070,
+    "max_geometry_error": 1.7763568394002505e-15,
+    "discrete_mismatches": 0,
+    "coverage": "continuous progress, crossings, closed paths, forward/reverse/rotation, random previous PWM, endpoints"
+  },
+  "processing_logic_checks": 86,
+  "source_sha256": {
+    "DigitalTwin\\Controller.pde": "49394df41a41ff780b9aea5ee6d49241cc1dc0dee4cc1f28c82b166b3ed1bb08",
+    "DigitalTwin\\DigitalTwin.pde": "c81ba8a61adf20a322db764c6fabb736b73d02883a9f4abd48482d2b1d5c5bea",
+    "DigitalTwin\\Graphing.pde": "281a61f8eaeac6413e86f1619dd780243ec611263e631cf3afb3f81176ed3b95",
+    "DigitalTwin\\MotorsModel.pde": "c6d0a6b621201d154b4a63204b570f1ef201bc4dbcdabf15967ce9b273029152",
+    "DigitalTwin\\OdometryModel.pde": "1e83ed6f1f32d12f217d42594587210d79fc39a9245b9b64817065b4da9d5ba9",
+    "DigitalTwin\\RobotSimulation.pde": "7f9ad31c50ff3e4f6b966db44abfc0f6472eb0d36323e3229ea32821ea21da11",
+    "DigitalTwin\\RouteEditor.pde": "5433f86b7175a33c8e955f22bdda3e950ce46b28028515d49837380b40f54a68",
+    "DigitalTwin\\Simulator.pde": "991c161aaf05c44da35a5b1538b69e374298197ca4cea06150d12857ed5174d8",
+    "DigitalTwin\\SurfaceSensorModel.pde": "c54836e3815437807fd88772b6d04430f1246f9dd1a117390dd4bf445d9ab104",
+    "DigitalTwin\\TCPTelemetry.pde": "4ea2bfffa1534e8ea6a668731018018e081ad24b18f2bd8834bfe2af2c72075b",
+    "DigitalTwin\\TreeModels.java": "af15826925bd3f296c50f1a1e2012aac0c851ff73c9f8f8792c098aa62c74423",
+    "DigitalTwin\\TwoTreeController.java": "a331d62f135014daae3fda24f13a36bb8b0a879f3a9cde5a5cfff98f93b9ee65"
+  }
+}

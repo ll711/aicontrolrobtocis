@@ -1,6 +1,10 @@
 # RoboticsScienceAndSystems
 Platforms for teaching Robotics Science and Systems
 
+## 技术文档
+
+[双决策树机器人路径跟踪系统技术说明](docs/TECHNICAL_DESCRIPTION_ZH.md)介绍系统架构、双树算法、编码器里程计、通信协议、运行方法、已有验证结果，以及仿真与实车对比的实验设计。
+
 ## 两棵决策树与鼠标路线控制
 
 用 Processing 打开 `DigitalTwin/DigitalTwin.pde`，连接机器人 WiFi，在画布中点击或自由画线，依次点 **Upload route → START**。**STOP / 空格**停车。路线由 `StampC3_Template` 中的 Tree1 + Tree2 C++ 执行。

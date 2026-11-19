@@ -1,5 +1,9 @@
 #include "Tree2MotorController.h"
+#if TREE2_USE_LEGACY
 #include "Tree2Model.h"
+#else
+#include "Tree2ControlPolicy.h"
+#endif
 
 #include <cmath>
 
@@ -46,17 +50,23 @@ bool predict(const tree1_embedded::Output& decision,
         return false;
 
     const std::int8_t direction = decision.mode == Action::FORWARD ? 1 : -1;
-    const float difference = Tree2Model::predict(static_cast<float>(angle),
-                                                direction, previousLeft, previousRight);
+#if TREE2_USE_LEGACY
+    const float difference = Tree2Model::predict(static_cast<float>(angle), direction, previousLeft, previousRight);
+#else
+    const float difference = tree2_measured::predict(static_cast<float>(angle), direction, previousLeft, previousRight);
+#endif
     if (!std::isfinite(difference)) return false;
 
     const double distanceToGo = goal > remaining ? goal : remaining;
-    const double base = (direction > 0 ? FORWARD_PWM : -REVERSE_PWM)
+    double base = (direction > 0 ? FORWARD_PWM : -REVERSE_PWM)
         * clamp(std::cos(angle), 0.0, 1.0)
         * clamp(distanceToGo / tree1::Config{}.lookahead_distance, 0.0, 1.0);
+#if !TREE2_USE_LEGACY
+    if (direction > 0) base *= tree2_measured::forwardSpeedScale(static_cast<float>(angle), difference);
+#endif
     // Reserve equal headroom around the requested base. Clipping each wheel
     // independently would change the average forward/reverse speed when a
-    // linear leaf predicts beyond the training teacher's saturation boundary.
+    // requested difference exceeds the available motor range.
     const double differentialLimit = 2.0 * (PWM_LIMIT - std::abs(base));
     const double differential = clamp(difference, -differentialLimit, differentialLimit);
     command = {pwm(base - differential / 2.0), pwm(base + differential / 2.0)};

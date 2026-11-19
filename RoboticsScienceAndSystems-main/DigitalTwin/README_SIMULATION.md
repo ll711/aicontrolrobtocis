@@ -17,7 +17,11 @@
 
 点击 **Physical TCP** 才会尝试连接机器人。默认仿真模式不会连接实车；切换目标前必须停车。实车使用 **Upload route → START**，重新选择目标后需要重新加载或上传。原有 WiFi/TCP 遥测、橙色实车轨迹、G 键遥测图保留。模拟小车不会因收到实车启动信号而自行启动。
 
-## 本次测试结果
+## 实测 Tree2 与旧版仿真
+
+默认版本为 `measured-forward-v1`。八条理想动力学路线中，新旧版各有七条达到几何终点，新版闭合方形在 5.011 mm 处收到 Tree1 STOP。两版的路线时间、误差和复现命令见[训练报告](../docs/TREE2_RETRAINING_REPORT.md)。
+
+## 2026-10-19 合成 Tree2 基线
 
 已使用真实 Processing 4.5.7 编译器编译完整草图；自动闭环测试直接调用编译后的 `Controller_c`、`RobotSimulation_c`、`MotorsModel_c` 和 `OdometryModel_c`，不使用另一套 Python 动力学。
 
@@ -36,16 +40,16 @@
 
 Java 与实际 C++ 适配器对照 **11070 组**：动作、进度、目标索引、终点状态、整数 PWM 均无差异；连续几何量最大误差约 1.78e-15。另有 **86 项**鼠标、模式选择和 TCP 协议逻辑检查及原有 3 组 C++ 测试。
 
-机器可读结果和每条路线逐步轨迹见上一级 `simulation-results/report.json` 和同目录 CSV。当前运动模型是课程的理想线性模型，缺少实测摩擦、打滑和时延；这些结果不代表实车成功率。Tree 2 仍使用合成教师数据。
+该历史基线的逐步轨迹位于上一级 `simulation-results/`。课程运动模型采用理想线性电机响应，实车的摩擦、打滑和时延需要独立测量。
 
 ## 重跑检查和同步模型
 
 在上一级项目目录运行（Python 路径按本机布局）：
 
 ```powershell
-& ../../../second_decision_tree/.venv/Scripts/python.exe tests/run_processing_simulation_checks.py
+& ../../second_decision_tree/.venv/Scripts/python.exe tests/run_processing_simulation_checks.py --tree1-source ../../first_tree --cpp-build-dir build-host/tree2-v1 --results-dir build-host/tree2-v1/verification
 ```
 
 退出码 2 表示测试完成但至少一条路线未达到严格终点条件，失败详情仍会写入报告。其他编译或断言错误会中止检查。
 
-更新 C++ 权重后，先运行 `tools/export_processing_models.py` 生成 `TreeModels.java`，再执行上述完整检查。生成文件记录三个 C++ 源头文件的 SHA256；不要手工更改 Java 权重。`TwoTreeController.java` 实现与固件相同的连续进度、特征和 PWM 适配。
+训练命令会调用 `tools/export_processing_models.py` 更新 `TreeModels.java` 并记录 C++ 模型和控制规则的 SHA256。`TwoTreeController.java` 实现与固件对应的连续进度、特征和 PWM 分配。

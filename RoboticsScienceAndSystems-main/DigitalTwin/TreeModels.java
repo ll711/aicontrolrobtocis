@@ -2,6 +2,8 @@
 // tree1_model.hpp SHA256 b5b50fad5c175f0eb22298e579ee8af18dd3e79e3b6439092df3dc76518a797b
 // tree1_config.hpp SHA256 10cfa038ab45515d70387e68304b9b7e52783cc0af7e1a68bebbf48d72150ada
 // Tree2Model.h SHA256 87b85b9611441f7698b73249838e8b2632a8f63787b2b032232d14e23f53aff7
+// Tree2MeasuredModel.h SHA256 884a9747222f21a872ac27db00f3a013573f3adbef5b170bcc15ccdd37a6448d
+// Tree2ControlPolicy.h SHA256 0b7a8bddcf215b5857eaaae0e6db815328c67deab61c7d25daa9ff84b8dbfdd5
 public final class TreeModels {
   public static final int FORWARD=0, REVERSE=1, ROTATE=2, STOP=3;
   public static final double SPACING=0.001;
@@ -114,8 +116,44 @@ if ((double)(x[2]) <= 8.5) {
     }
   }
 }
-  public static float difference(float eCW,int signal,int prevL,int prevR) {
+  public static float legacyDifference(float eCW,int signal,int prevL,int prevR) {
     float d=(float)prevR-(float)prevL;
     return 0.5f*(rawPredict(eCW,signal,d)-rawPredict(-eCW,signal,-d));
+  }
+  private static final boolean LEGACY = Boolean.getBoolean("tree2.legacy");
+  private static final float[] UPPER = {-1.48506582f, -1.22635567f, -0.928742051f, -0.392672896f, -2.61799432e-05f, 0.175885543f, 0.395797044f, 0.702687025f, 0.925626636f, 1.22324014f, 1.49753606f, 3.40282347e+38f};
+  private static final float[] ANGLE = {-1.54273903f, -1.34844923f, -1.05466425f, -0.627825916f, -0.18836771f, 0.0875749141f, 0.285445541f, 0.538518786f, 0.812093258f, 1.05141842f, 1.35515857f, 1.54478645f};
+  private static final float[] PWM = {25.0615387f, 18.0638294f, 20.470953f, 18.7997303f, 18.3208408f, -14.7739935f, -14.2710133f, -15.2714329f, -14.502924f, -16.6939316f, -14.4417477f, -21.3358212f};
+  private static float interpolate(float angle) {
+    int lo=0, hi=ANGLE.length-1;
+    if(angle<=ANGLE[lo]) return PWM[lo];
+    if(angle>=ANGLE[hi]) return PWM[hi];
+    while(lo<hi) {
+      int mid=lo+(hi-lo)/2;
+      if(angle>UPPER[mid]) lo=mid+1; else hi=mid;
+    }
+    if(angle<ANGLE[lo]) lo--;
+    float a=ANGLE[lo], b=ANGLE[lo+1], p=PWM[lo], q=PWM[lo+1];
+    if(a<0 && b>0) {
+      if(angle<0) { b=0; q=0; } else { a=0; p=0; }
+    }
+    float t=(angle-a)/(b-a);
+    return p+t*(q-p);
+  }
+  public static float difference(float angle,int signal,int prevL,int prevR) {
+    if(LEGACY) return legacyDifference(angle,signal,prevL,prevR);
+    float magnitude=Math.abs(angle), deadband=0.00628318531f;
+    if(magnitude<=deadband) return 0;
+    float sign=angle>0?-1f:1f, envelope=90.0f*(magnitude-deadband);
+    if(signal>0) return sign*Math.min(envelope,Math.max(0f,sign*interpolate(angle)));
+    float target=Math.min(envelope,140.0f);
+    float history=Math.min(target,Math.max(0f,sign*(prevR-prevL)));
+    return sign*(target+0.65f*(history-target));
+  }
+  public static float forwardSpeedScale(float angle,float difference) {
+    if(LEGACY) return 1f;
+    float nominal=Math.min(90.0f*(Math.abs(angle)-0.00628318531f),140.0f);
+    float actual=Math.abs(difference);
+    return actual<nominal?actual/nominal:1f;
   }
 }

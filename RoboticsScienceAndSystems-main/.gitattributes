@@ -1,0 +1,9 @@
+# The acquisition manifest hashes the original logger output, including its line endings.
+controldata/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+# Keep the archived simulation results byte-for-byte as recorded.
+artifacts/tree2-v1/*/simulation.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+# These files are written with LF by the training and evaluation tools.
+models/tree2_measured_v1.json text eol=lf
+docs/tree2_*.json text eol=lf
+StampC3_Template/Tree2MeasuredModel.h text eol=lf
+StampC3_Template/Tree2ControlPolicy.h text eol=lf

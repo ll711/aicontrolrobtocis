@@ -6,7 +6,7 @@
 DigitalTwin 鼠标路线 → WiFi/TCP → StampC3_Template/Controller.cpp
   → 编码器里程计（毫米转换为米）
   → Tree1PathController + tree1_model.hpp：动作、顺时针目标转角
-  → Tree2MotorController + Tree2Model.h：左右轮 PWM
+  → Tree2MotorController + Tree2MeasuredModel.h + Tree2ControlPolicy.h：左右轮 PWM
   → Robot_c::setMotorPWM()
 ```
 
@@ -43,15 +43,15 @@ DigitalTwin 鼠标路线 → WiFi/TCP → StampC3_Template/Controller.cpp
 ## 模型和坐标
 
 - **Tree1**：直接使用 `first_tree/cpp/tree1_model.hpp` 和 `tree1_config.hpp` 的已训练 River HAT，权重和训练配置不变。车端只推理，不在线训练。
-- **Tree2**：2026-10-19 使用 `second_decision_tree/main.py` 对现有 `tree2_data.csv` 重新训练并覆盖本目录的 `Tree2Model.h`。输入特征改为顺时针误差、运动方向、上一周期右减左 PWM，并用左右镜像推理约束消除直行偏置。训练数据保持原来的 6144 条合成样本；报告见本目录 `Tree2TrainingReport.json`。
+- **Tree2** 默认使用 `measured-forward-v1`。前进时，深度 4 的 CART 由顺时针剩余角预测左右轮差速。各叶保留独立的左右转幅度，再通过相邻叶插值和小角度限制生成请求。倒车使用有符号的教师规则。旧合成树保存在 `Tree2Model.h`，对应 `stampc3_legacy` 构建环境。
 - 画布和编码器遥测内部是毫米，上传和 Tree1 是米；定位 yaw 为逆时针正，Tree1 输出给 Tree2 的转角为顺时针正。
-- Tree2 预测 `right_pwm - left_pwm`，结合前进基准 45、倒车基准 -35 得到两轮 PWM。转角/终点距离会使基准减速；左右输出限幅到 [-100,100]，保持差分的共同余量。上一周期值来自上次成功发送的 PWM。
+- Tree2 预测 `right_pwm - left_pwm`。前进基准为 45，倒车基准为 -35，转角和终点距离参与减速。前进可用差速不足时，固件同比降低平均 PWM。每轮输出限制到 [-100,100]。上一周期输入来自上次成功发送的 PWM。
 - STOP 直接输出零；ROTATE 使用单独的原地转向，左右相反且不超过 35 PWM。Tree2 没有训练 signal=0，不能用 signal 单独区分旋转和停车。
 - 路线跟踪默认采用连续进度保护，限制交叉点、回到起点附近时跳到后段的情况。测试时可显式选择 `ProgressMode::SourceCompatible` 与原始 Tree1 几何实现逐项对照。此保护不改变模型权重。
 
 `OdometryModel.h` 当前默认轮半径 16 mm、轮距 90 mm、每圈 358.3 编码器计数，应按实车校准。原始 Tree1 训练动力学用的是其他示例参数。
 
-Tree2 当前是 **24 个合成会话、6144 条样本**，不是实车训练数据。按相同会话划分，验证 PWM 差值 MAE 从 **6.6561 降至 4.1913（降低 37.03%）**。前周期两轮 PWM 相等时，零转角预测差值为零；±0.1 rad 范围的教师规则最大误差为 0.001852 PWM，8194 个全角度检查中没有反向转弯预测。训练后仍需按实车校准；路线控制没有避障功能。镜像约束假设左右电机对称，换成不对称的实测数据时应重新评估这个假设。
+训练数据包含 720 个前进转弯实验轮次。测试集按整份采集文件保留，覆盖 160 轮。实测标签、模型误差、转向稳定性和板级验证状态见[训练报告](../docs/TREE2_RETRAINING_REPORT.md)和[固件集成报告](../TREE2_HARDWARE_INTEGRATION_REPORT.md)。
 
 ## 指令、停止和重连
 
@@ -90,9 +90,9 @@ PING
 在上一级项目目录执行：
 
 ```powershell
-cmake -S . -B build-host
-cmake --build build-host --config Release
-ctest --test-dir build-host -C Release --output-on-failure
+cmake -S . -B build-host/tree2-v1 -DTREE1_SOURCE_DIR=../../first_tree
+cmake --build build-host/tree2-v1 --config Release
+ctest --test-dir build-host/tree2-v1 -C Release --output-on-failure
 pio run -e stampc3
 ```
 
@@ -109,10 +109,11 @@ pio run -e stampc3
 
 ## 更新 Tree2
 
-在 `second_decision_tree` 中运行现有导出器即可更新部署头文件：
+在项目根目录使用装有 NumPy、pandas 和 scikit-learn 的 Python 运行以下命令。
 
 ```powershell
-.\.venv\Scripts\python.exe main.py --csv tree2_data.csv --output "..\robotics_system_all_AI\robotics-system\RoboticsScienceAndSystems-main\StampC3_Template\Tree2Model.h" --report "..\robotics_system_all_AI\robotics-system\RoboticsScienceAndSystems-main\StampC3_Template\Tree2TrainingReport.json" --training-note "Synthetic teacher data; not measured robot performance." --verify-cpp
+python -B tools/train_tree2.py
+pio run -e stampc3
 ```
 
-真实数据沿用 `session_id,alpha_rad,signal,pwm_l_prev,pwm_r_prev,pwm_l_target,pwm_r_target` 列和至少两个独立会话。更新模型后重新编译、验证，再上传固件。
+复现本机测试和回滚命令见[固件集成报告](../TREE2_HARDWARE_INTEGRATION_REPORT.md)。

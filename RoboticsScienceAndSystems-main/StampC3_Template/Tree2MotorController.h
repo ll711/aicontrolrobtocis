@@ -3,6 +3,10 @@
 #include "Tree1PathController.h"
 #include <cstdint>
 
+#ifndef TREE2_USE_LEGACY
+#define TREE2_USE_LEGACY 0
+#endif
+
 namespace tree2_motor {
 
 struct Command {
@@ -10,7 +14,7 @@ struct Command {
     std::int16_t right = 0;
 };
 
-// PWM units, matching the synthetic Tree 2 teacher. Tune with measured data.
+// Signed integer PWM units in the robot middleware protocol.
 constexpr int PWM_LIMIT = 100;
 constexpr double FORWARD_PWM = 45.0;
 constexpr double REVERSE_PWM = 35.0;
@@ -18,7 +22,7 @@ constexpr double ROTATE_PWM_LIMIT = 35.0;
 
 // Tree 2 predicts right-minus-left PWM, not two independent motor commands.
 // STOP bypasses inference. ROTATE uses a separate signed rotation controller:
-// the existing Tree 2 trainer excludes signal == 0 and cannot learn rotation.
+// the measured forward-turn experiments contain no in-place rotation.
 // All moving modes use the shortest clockwise angle in (-pi, pi]. PWM
 // difference is limited around the requested base to preserve average speed.
 // Returns false and a zero command for invalid inputs or predictions.

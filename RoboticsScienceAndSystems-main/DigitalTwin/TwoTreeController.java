@@ -119,6 +119,7 @@ public final class TwoTreeController {
     if(!Float.isFinite(difference)) return false;
     double base=(signal>0?45:-35)*clamp(Math.cos(a),0,1)
       *clamp(Math.max(out.features[7],out.features[8])/TreeModels.LOOKAHEAD,0,1);
+    if(signal>0) base*=TreeModels.forwardSpeedScale((float)a,difference);
     double limit=2*(100-Math.abs(base)),diff=clamp(difference,-limit,limit);
     out.left=pwm(base-diff/2);out.right=pwm(base+diff/2);return true;
   }

@@ -1,0 +1,87 @@
+{
+  "version": "measured-forward-v1",
+  "feature": "shortest_clockwise_remaining_angle_rad",
+  "target": "right_pwm - left_pwm",
+  "domain": "forward TURN",
+  "split": "entire acquisition by target",
+  "selected": {
+    "depth": 4,
+    "min_samples_leaf": 128
+  },
+  "leaves": [
+    {
+      "upper_rad": -1.485065758228302,
+      "center_rad": -1.5427390336990356,
+      "pwm": 25.061538696289062,
+      "samples": 130
+    },
+    {
+      "upper_rad": -1.2263556122779846,
+      "center_rad": -1.3484492301940918,
+      "pwm": 18.06382942199707,
+      "samples": 329
+    },
+    {
+      "upper_rad": -0.9287420511245728,
+      "center_rad": -1.0546642541885376,
+      "pwm": 20.4709529876709,
+      "samples": 1291
+    },
+    {
+      "upper_rad": -0.39267289638519287,
+      "center_rad": -0.627825915813446,
+      "pwm": 18.79973030090332,
+      "samples": 4444
+    },
+    {
+      "upper_rad": -2.617994323372841e-05,
+      "center_rad": -0.18836770951747894,
+      "pwm": 18.32084083557129,
+      "samples": 4990
+    },
+    {
+      "upper_rad": 0.17588555067777634,
+      "center_rad": 0.08757491409778595,
+      "pwm": -14.773993492126465,
+      "samples": 2907
+    },
+    {
+      "upper_rad": 0.3957970440387726,
+      "center_rad": 0.28544554114341736,
+      "pwm": -14.271013259887695,
+      "samples": 3129
+    },
+    {
+      "upper_rad": 0.7026870250701904,
+      "center_rad": 0.5385187864303589,
+      "pwm": -15.271432876586914,
+      "samples": 3511
+    },
+    {
+      "upper_rad": 0.925626665353775,
+      "center_rad": 0.8120932579040527,
+      "pwm": -14.502923965454102,
+      "samples": 1710
+    },
+    {
+      "upper_rad": 1.2232401967048645,
+      "center_rad": 1.051418423652649,
+      "pwm": -16.693931579589844,
+      "samples": 1516
+    },
+    {
+      "upper_rad": 1.4975361227989197,
+      "center_rad": 1.3551585674285889,
+      "pwm": -14.441747665405273,
+      "samples": 412
+    },
+    {
+      "upper_rad": null,
+      "center_rad": 1.5447864532470703,
+      "pwm": -21.3358211517334,
+      "samples": 134
+    }
+  ],
+  "deadband_rad": 0.0062831854447722435,
+  "envelope_pwm_per_rad": 90.0
+}

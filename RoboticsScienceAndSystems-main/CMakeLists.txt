@@ -18,6 +18,8 @@ add_library(tree_adapters OBJECT
   "${STAMP_DIR}/Tree2MotorController.cpp"
   "${STAMP_DIR}/RouteCommandParser.cpp")
 target_include_directories(tree_adapters PUBLIC "${STAMP_DIR}")
+option(TREE2_USE_LEGACY "Build the original synthetic Tree2 motor policy" OFF)
+target_compile_definitions(tree_adapters PUBLIC TREE2_USE_LEGACY=$<BOOL:${TREE2_USE_LEGACY}>)
 # Compile the actual embedded adapters without C++ exception support, like ESP32.
 if(MSVC)
   target_compile_options(tree_adapters PRIVATE /W4 /EHs-c-)
@@ -51,3 +53,6 @@ add_test(NAME route_commands COMMAND route_command_tests)
 
 add_executable(processing_parity tests/processing_parity.cpp)
 target_link_libraries(processing_parity PRIVATE tree_adapters)
+
+add_executable(tree2_replay tests/tree2_replay.cpp)
+target_link_libraries(tree2_replay PRIVATE tree_adapters)

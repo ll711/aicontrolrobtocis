@@ -10,6 +10,7 @@
 #include <vector>
 #include <Arduino.h>
 #include "Tree2Model.h"
+#include "Tree2ControlPolicy.h"
 
 // Supply hardware boundary fakes, then compile the real controller unchanged.
 // The production Robot implementation is validated by the firmware build.
@@ -210,6 +211,30 @@ void headingAndEndpoint() {
     f.cycle(110);
     f.requireStopped("endpoint stop stays latched until reset");
     require(f.controller.getSignal() == 1, "telemetry start signal retained after stop");
+}
+
+void deployedTree2At75Degrees() {
+    for (const int side : {-1, 1}) {
+        Fixture f;
+        const float yaw = side * 1.308996939f;
+        f.controller.odometry.reset(0, 0, yaw);
+        f.start();
+        f.cycle(50);
+        f.robot.left_pwm = -50 * side;
+        f.robot.right_pwm = 50 * side;
+        f.cycle(60);
+        const auto& d = f.controller.lastDecision();
+        require(d.mode == tree1_model::Action::FORWARD, "Tree1 selects FORWARD on the 75 degree fixture");
+        const float old = Tree2Model::predict(static_cast<float>(d.delta_theta), 1, -50*side, 50*side);
+        const float measured = tree2_measured::predict(static_cast<float>(d.delta_theta), 1, -50*side, 50*side);
+        require(old * side > 0 && measured * side < 0, "opposing history reproduces the legacy reversal only");
+        const double diff = TREE2_USE_LEGACY ? old : measured;
+        double base = tree2_motor::FORWARD_PWM * std::cos(d.delta_theta);
+        if (!TREE2_USE_LEGACY) base *= tree2_measured::forwardSpeedScale(static_cast<float>(d.delta_theta), measured);
+        require(f.robot.left_pwm == std::lround(base - diff / 2) &&
+                f.robot.right_pwm == std::lround(base + diff / 2),
+                "selected Tree2 reaches the left/right hardware boundary in Controller.cpp");
+    }
 }
 
 void failureLatching() {
@@ -439,7 +464,11 @@ void motorAngleAndSaturationRegressions() {
         output.mode = mode;
         for (const double angle : {-0.5, -0.2, 0.0, 0.2, 0.5}) {
             output.delta_theta = angle;
-            const double base = (mode == tree1_model::Action::FORWARD ? 45 : -35) * std::cos(angle);
+            double base = (mode == tree1_model::Action::FORWARD ? 45 : -35) * std::cos(angle);
+            if (!TREE2_USE_LEGACY && mode == tree1_model::Action::FORWARD) {
+                const auto a = static_cast<float>(angle);
+                base *= tree2_measured::forwardSpeedScale(a, tree2_measured::predict(a, 1, 0, 0));
+            }
             for (const int previous : {-100, 100}) {
                 require(tree2_motor::predict(output, static_cast<int16_t>(previous),
                                             static_cast<int16_t>(-previous), actual), "extreme previous difference accepted");
@@ -523,6 +552,7 @@ int main() {
     cadenceAndButton();
     baselineAndUnits();
     headingAndEndpoint();
+    deployedTree2At75Degrees();
     failureLatching();
     routeReplacement();
     remoteUploadStartStopAndReset();

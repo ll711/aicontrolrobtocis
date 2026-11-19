@@ -13,6 +13,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--build-dir', type=Path, required=True)
     parser.add_argument('--java-home', type=Path, required=True)
+    parser.add_argument('--cpp-exe', type=Path, default=ROOT/'build-host/Release/processing_parity.exe')
+    parser.add_argument('--legacy', action='store_true', help='Compare rollback Java and C++ builds')
+    parser.add_argument('--report', type=Path, help='Output JSON path')
     args = parser.parse_args()
     rng = random.Random(20261019)
     records = []
@@ -35,9 +38,9 @@ def main():
                     records.append(f'P {x:.17g} {y:.17g} {yaw:.17g} {rng.randint(-100,100)} {rng.randint(-100,100)}')
             records.append(f'P {path[-1][0]} {path[-1][1]} 0 0 0')
     payload = '\n'.join(records)+'\n'
-    java = subprocess.run([str(args.java_home/'bin/java.exe'), '-cp', str(args.build_dir),
+    java = subprocess.run([str(args.java_home/'bin/java.exe'), '-Dtree2.legacy='+str(args.legacy).lower(), '-cp', str(args.build_dir),
                            'ProcessingParity'], input=payload, text=True, capture_output=True, check=True)
-    cpp = subprocess.run([str(ROOT/'build-host/Release/processing_parity.exe')],
+    cpp = subprocess.run([str(args.cpp_exe.resolve())],
                          input=payload, text=True, capture_output=True, check=True)
     actual = [[float(v) for v in row.split()] for row in java.stdout.splitlines()]
     expected = [[float(v) for v in row.split()] for row in cpp.stdout.splitlines()]
@@ -53,7 +56,7 @@ def main():
                 assert abs(a-b) <= 1e-10*(1+abs(b)), (index, col, a, b)
     report = {'passed': True, 'cases': len(actual), 'max_geometry_error': maximum,
               'discrete_mismatches': 0, 'coverage': 'continuous progress, crossings, closed paths, forward/reverse/rotation, random previous PWM, endpoints'}
-    output = ROOT/'build-host/simulation-results/java_cpp_parity.json'
+    output = args.report or ROOT/'build-host/simulation-results'/('java_cpp_parity_legacy.json' if args.legacy else 'java_cpp_parity.json')
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
     print(json.dumps(report))

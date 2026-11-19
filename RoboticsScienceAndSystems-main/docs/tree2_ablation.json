@@ -1,0 +1,861 @@
+{
+  "physics_step_ms": 10,
+  "decision_step_ms": 50,
+  "timeout_s": 300,
+  "goal_tolerance_mm": 5,
+  "raw_forward_probe": {
+    "angles": 50,
+    "previous_differences": [
+      -200,
+      0,
+      200
+    ],
+    "cases": 150
+  },
+  "feature_ablation": {
+    "train_rows": 24503,
+    "validation_rows": 7085,
+    "test_rows": 11610,
+    "random_state": 42,
+    "motion_signal": 1,
+    "history": "last recorded PWM difference within the trial, before TURN filtering",
+    "max_depth": 4,
+    "min_samples_leaf": 128,
+    "previous_difference_train_range": [
+      -25,
+      34
+    ],
+    "results": {
+      "previous_command": {
+        "validation": {
+          "n": 7085,
+          "mae": 0.7803810868031051,
+          "rmse": 3.2981464395150093,
+          "wrong_sign": 34,
+          "wrong_sign_rate": 0.004798870853916726,
+          "zero": 48,
+          "sign_mismatch_rate": 0.011573747353563868
+        },
+        "test": {
+          "n": 11610,
+          "mae": 0.6572782084409992,
+          "rmse": 2.956634607087547,
+          "wrong_sign": 40,
+          "wrong_sign_rate": 0.0034453057708871662,
+          "zero": 64,
+          "sign_mismatch_rate": 0.008957795004306632
+        },
+        "test_first_turn_sample": {
+          "n": 160,
+          "mae": 23.2625,
+          "rmse": 23.326487090858752,
+          "wrong_sign": 40,
+          "wrong_sign_rate": 0.25,
+          "zero": 64,
+          "sign_mismatch_rate": 0.65
+        }
+      },
+      "angle": {
+        "leaves": 12,
+        "validation": {
+          "n": 7085,
+          "mae": 2.029809401296793,
+          "rmse": 3.6026063225581475,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test": {
+          "n": 11610,
+          "mae": 1.664865070545002,
+          "rmse": 2.553340033753403,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test_first_turn_sample": {
+          "n": 160,
+          "mae": 6.9930420679625955,
+          "rmse": 7.042074645103773,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "opposite_at_75_of_401": {
+          "-75": 0,
+          "75": 0
+        }
+      },
+      "angle_mode": {
+        "leaves": 12,
+        "validation": {
+          "n": 7085,
+          "mae": 2.029809401296793,
+          "rmse": 3.6026063225581475,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test": {
+          "n": 11610,
+          "mae": 1.664865070545002,
+          "rmse": 2.553340033753403,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test_first_turn_sample": {
+          "n": 160,
+          "mae": 6.9930420679625955,
+          "rmse": 7.042074645103773,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "opposite_at_75_of_401": {
+          "-75": 0,
+          "75": 0
+        }
+      },
+      "angle_mode_history": {
+        "leaves": 13,
+        "validation": {
+          "n": 7085,
+          "mae": 0.8569091322369049,
+          "rmse": 2.2593927316449283,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test": {
+          "n": 11610,
+          "mae": 0.632639734518806,
+          "rmse": 1.0820120812709217,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "test_first_turn_sample": {
+          "n": 160,
+          "mae": 0.530795454545454,
+          "rmse": 0.7233452189550463,
+          "wrong_sign": 0,
+          "wrong_sign_rate": 0.0,
+          "zero": 0,
+          "sign_mismatch_rate": 0.0
+        },
+        "opposite_at_75_of_401": {
+          "-75": 0,
+          "75": 0
+        }
+      }
+    }
+  },
+  "model": "measured-forward-v1",
+  "groups": {
+    "A": {
+      "forward": "legacy",
+      "forward_speed": "legacy",
+      "reverse": "legacy",
+      "passed": 7,
+      "total": 8,
+      "harness_exit": 2,
+      "routes": {
+        "straight": {
+          "success": true,
+          "terminal": true,
+          "seconds": 5.5,
+          "goal_error_mm": 4.749878,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 109,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 108,
+          "forward_sign_flips": 0,
+          "trace_sha256": "932ed67ce388811160d1c648a5ac7d02add0b74ad6d748de5cb14ca273245076",
+          "max_abs_y_mm": 0.0
+        },
+        "right_angle": {
+          "success": true,
+          "terminal": true,
+          "seconds": 7.7,
+          "goal_error_mm": 4.900857,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 153,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 152,
+          "forward_sign_flips": 0,
+          "trace_sha256": "ed2af4ce0e855cdc2f257a2e8494d743a48c0547c7d5c92d91b8df4f8be695af"
+        },
+        "closed_square": {
+          "success": true,
+          "terminal": true,
+          "seconds": 15.45,
+          "goal_error_mm": 4.902673,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 308,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 307,
+          "forward_sign_flips": 3,
+          "trace_sha256": "cf1f7ba58c92684f40e7ffd95d824becfe251c8313154a02fefa4fb7badfc72d"
+        },
+        "s_curve": {
+          "success": true,
+          "terminal": true,
+          "seconds": 9.9,
+          "goal_error_mm": 4.817867,
+          "remaining_mm": 3.420185,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 197,
+            "STOP": 1
+          },
+          "first_pwm": [
+            33,
+            50
+          ],
+          "forward_pairs": 196,
+          "forward_sign_flips": 2,
+          "trace_sha256": "b4b07d50e38696c344c3179448f0b521aa5cd94a0af45f86a23f51fb62722e13"
+        },
+        "crossing": {
+          "success": false,
+          "terminal": false,
+          "seconds": 18.25,
+          "goal_error_mm": 5.059894,
+          "remaining_mm": 3.116882,
+          "reason": "Tree1 STOP before geometric endpoint",
+          "actions": {
+            "FORWARD": 347,
+            "ROTATE": 17,
+            "STOP": 1
+          },
+          "first_pwm": [
+            19,
+            45
+          ],
+          "forward_pairs": 335,
+          "forward_sign_flips": 4,
+          "trace_sha256": "6a6f5a17405fdac2a7ca6d8fdd8c8c47e9f6e791e57733a1929f7a4cdd4947a1"
+        },
+        "reverse": {
+          "success": true,
+          "terminal": true,
+          "seconds": 7.05,
+          "goal_error_mm": 4.875001,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "REVERSE": 140,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            -35
+          ],
+          "forward_pairs": 0,
+          "forward_sign_flips": 0,
+          "trace_sha256": "83bd5f5e804f7c805f56a1f887acdb4b8003b985a1b6aa8839ef436586caee83"
+        },
+        "rotate_start": {
+          "success": true,
+          "terminal": true,
+          "seconds": 6.6,
+          "goal_error_mm": 4.412288,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "ROTATE": 5,
+            "FORWARD": 126,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            35
+          ],
+          "forward_pairs": 125,
+          "forward_sign_flips": 2,
+          "trace_sha256": "e7f1ad3c6fedd05b0b93f87de5e2958bc0a4daf8aa263437f215fcf168339840"
+        },
+        "duplicates": {
+          "success": true,
+          "terminal": true,
+          "seconds": 6.3,
+          "goal_error_mm": 4.751507,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 125,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 124,
+          "forward_sign_flips": 1,
+          "trace_sha256": "2c2616f91d83b7031207c5f2a63158bfb09a7ec3cb38ca6e80a38253ba1d5709"
+        }
+      }
+    },
+    "B": {
+      "forward": "raw CART",
+      "forward_speed": "legacy",
+      "reverse": "legacy",
+      "passed": 6,
+      "total": 8,
+      "harness_exit": 2,
+      "routes": {
+        "straight": {
+          "success": true,
+          "terminal": true,
+          "seconds": 5.5,
+          "goal_error_mm": 4.659089,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 109,
+            "STOP": 1
+          },
+          "first_pwm": [
+            52,
+            38
+          ],
+          "forward_pairs": 108,
+          "forward_sign_flips": 95,
+          "trace_sha256": "8428e8b50e37ae30ee458120709044251e20d2f30556847313db6c524cb84445",
+          "max_abs_y_mm": 0.062589228
+        },
+        "right_angle": {
+          "success": true,
+          "terminal": true,
+          "seconds": 15.1,
+          "goal_error_mm": 4.970027,
+          "remaining_mm": 0.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 267,
+            "ROTATE": 34,
+            "STOP": 1
+          },
+          "first_pwm": [
+            52,
+            38
+          ],
+          "forward_pairs": 232,
+          "forward_sign_flips": 58,
+          "trace_sha256": "bb0ad98baa4cd12b31120611569aab012bfce239a3380ec0b24775958d35a9fe"
+        },
+        "closed_square": {
+          "success": true,
+          "terminal": true,
+          "seconds": 23.6,
+          "goal_error_mm": 4.531072,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 454,
+            "ROTATE": 17,
+            "STOP": 1
+          },
+          "first_pwm": [
+            52,
+            38
+          ],
+          "forward_pairs": 436,
+          "forward_sign_flips": 61,
+          "trace_sha256": "6465d4742b710d5361b64f074cfe4bdc5308c53a806545d30af031e152ff50df"
+        },
+        "s_curve": {
+          "success": false,
+          "terminal": false,
+          "seconds": 300.0,
+          "goal_error_mm": 20.899832,
+          "remaining_mm": 0.0,
+          "reason": "timeout",
+          "actions": {
+            "FORWARD": 391,
+            "ROTATE": 5608,
+            "REVERSE": 1
+          },
+          "first_pwm": [
+            33,
+            51
+          ],
+          "forward_pairs": 346,
+          "forward_sign_flips": 3,
+          "trace_sha256": "3be062807cf3db5a178b10e1697589a002ee3c370a3447ee40ddb442e4a9b43e"
+        },
+        "crossing": {
+          "success": true,
+          "terminal": true,
+          "seconds": 20.7,
+          "goal_error_mm": 4.726974,
+          "remaining_mm": 4.116882,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 133,
+            "REVERSE": 274,
+            "ROTATE": 6,
+            "STOP": 1
+          },
+          "first_pwm": [
+            22,
+            41
+          ],
+          "forward_pairs": 132,
+          "forward_sign_flips": 1,
+          "trace_sha256": "0fb58fb5d8b5f8a580548cd5eef0a88578b97d910f00a951b95dc4033fe13ac2"
+        },
+        "reverse": {
+          "success": true,
+          "terminal": true,
+          "seconds": 7.05,
+          "goal_error_mm": 4.875001,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "REVERSE": 140,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            -35
+          ],
+          "forward_pairs": 0,
+          "forward_sign_flips": 0,
+          "trace_sha256": "83bd5f5e804f7c805f56a1f887acdb4b8003b985a1b6aa8839ef436586caee83"
+        },
+        "rotate_start": {
+          "success": false,
+          "terminal": false,
+          "seconds": 10.95,
+          "goal_error_mm": 5.074229,
+          "remaining_mm": 0.0,
+          "reason": "Tree1 STOP before geometric endpoint",
+          "actions": {
+            "ROTATE": 15,
+            "FORWARD": 203,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            35
+          ],
+          "forward_pairs": 192,
+          "forward_sign_flips": 1,
+          "trace_sha256": "3488f92bb9652a7a98701c9f9cf5be26058747d27f5b5a38be56d02410f50c33"
+        },
+        "duplicates": {
+          "success": true,
+          "terminal": true,
+          "seconds": 9.35,
+          "goal_error_mm": 4.714953,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 177,
+            "ROTATE": 9,
+            "STOP": 1
+          },
+          "first_pwm": [
+            52,
+            38
+          ],
+          "forward_pairs": 167,
+          "forward_sign_flips": 41,
+          "trace_sha256": "e10c9303496b0fcb8ef2bf7d25d2598b19181fca47b36d4b09c1ea27c3258e4b"
+        }
+      }
+    },
+    "C": {
+      "forward": "interpolated CART with deadband and envelope",
+      "forward_speed": "measured",
+      "reverse": "guarded teacher",
+      "passed": 7,
+      "total": 8,
+      "harness_exit": 2,
+      "routes": {
+        "straight": {
+          "success": true,
+          "terminal": true,
+          "seconds": 5.5,
+          "goal_error_mm": 4.749878,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 109,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 108,
+          "forward_sign_flips": 0,
+          "trace_sha256": "932ed67ce388811160d1c648a5ac7d02add0b74ad6d748de5cb14ca273245076",
+          "max_abs_y_mm": 0.0
+        },
+        "right_angle": {
+          "success": true,
+          "terminal": true,
+          "seconds": 12.9,
+          "goal_error_mm": 4.713918,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 257,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 256,
+          "forward_sign_flips": 0,
+          "trace_sha256": "888416199d5c2933be2f5047a704ea754478e7b0f19f5b96418a9136a1d536db"
+        },
+        "closed_square": {
+          "success": false,
+          "terminal": false,
+          "seconds": 31.9,
+          "goal_error_mm": 5.011459,
+          "remaining_mm": 4.0,
+          "reason": "Tree1 STOP before geometric endpoint",
+          "actions": {
+            "FORWARD": 637,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 636,
+          "forward_sign_flips": 1,
+          "trace_sha256": "716dc92f86b56749ba6b6d30fea03e0fb6a848d8745898ad5aeb70d3749c45e0"
+        },
+        "s_curve": {
+          "success": true,
+          "terminal": true,
+          "seconds": 27.65,
+          "goal_error_mm": 4.870454,
+          "remaining_mm": 4.420185,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 552,
+            "STOP": 1
+          },
+          "first_pwm": [
+            14,
+            32
+          ],
+          "forward_pairs": 551,
+          "forward_sign_flips": 0,
+          "trace_sha256": "355f84136fd4008749a65aedb8475f2070812988a11f0d588096671443916d9e"
+        },
+        "crossing": {
+          "success": true,
+          "terminal": true,
+          "seconds": 30.75,
+          "goal_error_mm": 4.978489,
+          "remaining_mm": 4.116882,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 409,
+            "ROTATE": 14,
+            "REVERSE": 191,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -1,
+            19
+          ],
+          "forward_pairs": 401,
+          "forward_sign_flips": 1,
+          "trace_sha256": "a08441d15b657f3b74e735763263bad1dd888b7e11713f1714af89c8327e2c3d"
+        },
+        "reverse": {
+          "success": true,
+          "terminal": true,
+          "seconds": 7.05,
+          "goal_error_mm": 4.937408,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "REVERSE": 140,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            -35
+          ],
+          "forward_pairs": 0,
+          "forward_sign_flips": 0,
+          "trace_sha256": "ce6f3e0226f2c4fd425bd035c9e861aa9dcb05cfe82c956a9ba2a3eab89ef176"
+        },
+        "rotate_start": {
+          "success": true,
+          "terminal": true,
+          "seconds": 11.45,
+          "goal_error_mm": 4.699841,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "ROTATE": 5,
+            "FORWARD": 223,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            35
+          ],
+          "forward_pairs": 222,
+          "forward_sign_flips": 0,
+          "trace_sha256": "e6c8f217052701b3f4e9df5fb9da95b0667837c8c83d29bfbb36f53680066810"
+        },
+        "duplicates": {
+          "success": true,
+          "terminal": true,
+          "seconds": 12.2,
+          "goal_error_mm": 4.985731,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 243,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 242,
+          "forward_sign_flips": 0,
+          "trace_sha256": "57fae08b2041baea8c0258482c99d47d5a239d69768f1f2a945f6daca99f6e3f"
+        }
+      }
+    },
+    "C_legacy_reverse": {
+      "forward": "interpolated CART with deadband and envelope",
+      "forward_speed": "measured",
+      "reverse": "legacy",
+      "passed": 7,
+      "total": 8,
+      "harness_exit": 2,
+      "routes": {
+        "straight": {
+          "success": true,
+          "terminal": true,
+          "seconds": 5.5,
+          "goal_error_mm": 4.749878,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 109,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 108,
+          "forward_sign_flips": 0,
+          "trace_sha256": "932ed67ce388811160d1c648a5ac7d02add0b74ad6d748de5cb14ca273245076",
+          "max_abs_y_mm": 0.0
+        },
+        "right_angle": {
+          "success": true,
+          "terminal": true,
+          "seconds": 12.9,
+          "goal_error_mm": 4.713918,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 257,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 256,
+          "forward_sign_flips": 0,
+          "trace_sha256": "888416199d5c2933be2f5047a704ea754478e7b0f19f5b96418a9136a1d536db"
+        },
+        "closed_square": {
+          "success": false,
+          "terminal": false,
+          "seconds": 31.9,
+          "goal_error_mm": 5.011459,
+          "remaining_mm": 4.0,
+          "reason": "Tree1 STOP before geometric endpoint",
+          "actions": {
+            "FORWARD": 637,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 636,
+          "forward_sign_flips": 1,
+          "trace_sha256": "716dc92f86b56749ba6b6d30fea03e0fb6a848d8745898ad5aeb70d3749c45e0"
+        },
+        "s_curve": {
+          "success": true,
+          "terminal": true,
+          "seconds": 27.65,
+          "goal_error_mm": 4.870454,
+          "remaining_mm": 4.420185,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 552,
+            "STOP": 1
+          },
+          "first_pwm": [
+            14,
+            32
+          ],
+          "forward_pairs": 551,
+          "forward_sign_flips": 0,
+          "trace_sha256": "355f84136fd4008749a65aedb8475f2070812988a11f0d588096671443916d9e"
+        },
+        "crossing": {
+          "success": true,
+          "terminal": true,
+          "seconds": 30.7,
+          "goal_error_mm": 4.85523,
+          "remaining_mm": 4.116882,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 409,
+            "ROTATE": 14,
+            "REVERSE": 190,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -1,
+            19
+          ],
+          "forward_pairs": 401,
+          "forward_sign_flips": 1,
+          "trace_sha256": "697220b71ee8832e1d56b66e1bacf03dcd8d1d8a9c5f46384011443f4d5f38cb"
+        },
+        "reverse": {
+          "success": true,
+          "terminal": true,
+          "seconds": 7.05,
+          "goal_error_mm": 4.875001,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "REVERSE": 140,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            -35
+          ],
+          "forward_pairs": 0,
+          "forward_sign_flips": 0,
+          "trace_sha256": "83bd5f5e804f7c805f56a1f887acdb4b8003b985a1b6aa8839ef436586caee83"
+        },
+        "rotate_start": {
+          "success": true,
+          "terminal": true,
+          "seconds": 11.45,
+          "goal_error_mm": 4.699841,
+          "remaining_mm": 5.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "ROTATE": 5,
+            "FORWARD": 223,
+            "STOP": 1
+          },
+          "first_pwm": [
+            -35,
+            35
+          ],
+          "forward_pairs": 222,
+          "forward_sign_flips": 0,
+          "trace_sha256": "e6c8f217052701b3f4e9df5fb9da95b0667837c8c83d29bfbb36f53680066810"
+        },
+        "duplicates": {
+          "success": true,
+          "terminal": true,
+          "seconds": 12.2,
+          "goal_error_mm": 4.985731,
+          "remaining_mm": 4.0,
+          "reason": "Reached endpoint",
+          "actions": {
+            "FORWARD": 243,
+            "STOP": 1
+          },
+          "first_pwm": [
+            45,
+            45
+          ],
+          "forward_pairs": 242,
+          "forward_sign_flips": 0,
+          "trace_sha256": "57fae08b2041baea8c0258482c99d47d5a239d69768f1f2a945f6daca99f6e3f"
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "DigitalTwin/Controller.pde": "49394df41a41ff780b9aea5ee6d49241cc1dc0dee4cc1f28c82b166b3ed1bb08",
+    "DigitalTwin/DigitalTwin.pde": "c81ba8a61adf20a322db764c6fabb736b73d02883a9f4abd48482d2b1d5c5bea",
+    "DigitalTwin/Graphing.pde": "281a61f8eaeac6413e86f1619dd780243ec611263e631cf3afb3f81176ed3b95",
+    "DigitalTwin/MotorsModel.pde": "c6d0a6b621201d154b4a63204b570f1ef201bc4dbcdabf15967ce9b273029152",
+    "DigitalTwin/OdometryModel.pde": "1e83ed6f1f32d12f217d42594587210d79fc39a9245b9b64817065b4da9d5ba9",
+    "DigitalTwin/RobotSimulation.pde": "7f9ad31c50ff3e4f6b966db44abfc0f6472eb0d36323e3229ea32821ea21da11",
+    "DigitalTwin/RouteEditor.pde": "5433f86b7175a33c8e955f22bdda3e950ce46b28028515d49837380b40f54a68",
+    "DigitalTwin/Simulator.pde": "991c161aaf05c44da35a5b1538b69e374298197ca4cea06150d12857ed5174d8",
+    "DigitalTwin/SurfaceSensorModel.pde": "c54836e3815437807fd88772b6d04430f1246f9dd1a117390dd4bf445d9ab104",
+    "DigitalTwin/TCPTelemetry.pde": "4ea2bfffa1534e8ea6a668731018018e081ad24b18f2bd8834bfe2af2c72075b",
+    "DigitalTwin/TreeModels.java": "7d3ab9eb75c56fa9bf6a2a630b04be0569ec80e494ae756848679fd0b61a5456",
+    "DigitalTwin/TwoTreeController.java": "3918b480b957c9759743e821516b5f3c133aec79751f2568b7f9d394c480c4e2",
+    "tests/ProcessingSimulationTests.java": "ba86537c80720547eac06637e8e62789ef8822d1b708a485a2fbf69bc709fc0e",
+    "tests/Tree2AblationProbe.java": "359ccf6f45c69db68177767abcb44bafe4e1166ab27ea6b6897d60610eff68c1",
+    "tests/run_processing_simulation_checks.py": "f1c782fd6e3fc3b99e3e3c4360c0022067379f8c88fe67c21b56ef4ffe2ae36e",
+    "tests/run_tree2_ablation.py": "a71eb5dacfd72216b5e656f12d1a2cca4840261b133fa318c585a2e080ab202d",
+    "tools/export_processing_models.py": "60a51de62c44535cf65e809013625c73256d20c9e12c3304043ed5b920d553f2",
+    "tools/train_tree2.py": "ac0cd9040fa1c229d667c292edd29550068c16f5b89623443f6c6cbf47364e26",
+    "tools/tree2_data.py": "06aeb7a1466ebaf546e11ab7a4e0dbbcd486abf8c522e19f13f8856d31e91e20",
+    "StampC3_Template/Tree2MeasuredModel.h": "884a9747222f21a872ac27db00f3a013573f3adbef5b170bcc15ccdd37a6448d",
+    "StampC3_Template/Tree2ControlPolicy.h": "0b7a8bddcf215b5857eaaae0e6db815328c67deab61c7d25daa9ff84b8dbfdd5",
+    "StampC3_Template/Tree2Model.h": "87b85b9611441f7698b73249838e8b2632a8f63787b2b032232d14e23f53aff7",
+    "StampC3_Template/tree1_model.hpp": "b5b50fad5c175f0eb22298e579ee8af18dd3e79e3b6439092df3dc76518a797b",
+    "StampC3_Template/tree1_config.hpp": "10cfa038ab45515d70387e68304b9b7e52783cc0af7e1a68bebbf48d72150ada",
+    "models/tree2_measured_v1.json": "94468bd6cf1e2c6a1eb22e483053e1334885e5208605bbdb340710f965ef0c60",
+    "docs/tree2_training.json": "9510d1c13c987f728435cc3ff8496807d0a1c2392b927314806b7ad8ed1a9ec6"
+  },
+  "test_class_source_sha256": "36da38d2c5e0b24d050a3da311cd46f5ebf5d9aaa3ccc250f0aaeaf53326c11d"
+}
